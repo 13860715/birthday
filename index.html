@@ -9,7 +9,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700&display=swap" rel="stylesheet">
 <script type="importmap">
 { "imports": {
-    "three": "three.module.js"
+    "three": "three.module.js",
+    "three/addons/environments/RoomEnvironment.js": "./RoomEnvironment.js"
 } }
 </script>
 <style>
@@ -188,7 +189,7 @@ body{
 
 <script type="module">
 import * as THREE from 'three';
-import { RoomEnvironment } from 'RoomEnvironment.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
 /* ===== utils ===== */
 const FA='۰۱۲۳۴۵۶۷۸۹';
