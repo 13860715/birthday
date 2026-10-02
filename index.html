@@ -833,13 +833,18 @@ fileIn.addEventListener('change',async function(){
     TRACKS.push({type:'audio', name:name, lines:splitName(name), buffer:buf, dbId:dbId});
 
     var slotIdx;
-    if (pendingSlot !== null && S.slots[pendingSlot] === null) {
+    if (pendingSlot !== null && pendingSlot < 8 && S.slots[pendingSlot] === null) {
       slotIdx = pendingSlot;
     } else {
-      slotIdx = S.slots.findIndex(function(s) { return s === null; });
+      // فقط در ۸ اسلات اول دنبال خالی بگرد
+      slotIdx = -1;
+      for (var i = 0; i < 8 && i < S.slots.length; i++) {
+        if (S.slots[i] === null) { slotIdx = i; break; }
+      }
       if (slotIdx === -1) {
-        S.slots.push(trackIdx);
-        slotIdx = S.slots.length - 1;
+        alert('قفسه پر است! لطفاً ابتدا یک دیسک را حذف کنید.');
+        pendingSlot = null;
+        return;
       }
     }
     S.slots[slotIdx] = trackIdx;
@@ -1015,8 +1020,9 @@ var AudioSys = {
       this.ni=(this.ni+1)%tr.notes.length;
     }
   },
-  swapTo:function(){
+  swapTo:async function(){
     if(!this.ctx) return;
+    await decodeSavedIfNeeded();
     var now=this.ctx.currentTime;
     this.click(now);
     this.thump(now+.85,.5);
@@ -1098,14 +1104,30 @@ document.addEventListener('keydown',function(e){
   if(e.code==='Space' && !e.target.closest('button')){ e.preventDefault(); setPlaying(!S.playing); }
 });
 
+/* ═══ بارگذاری آهنگ‌های ذخیره‌شده از IDB ═══ */
 (async function() {
   await DB.init();
   var saved = await DB.getAll();
+  
+  // آهنگ‌های ذخیره شده را در اسلات‌های خالی ۸ تای اول قرار بده
   saved.forEach(function(item) {
     var idx = TRACKS.length;
     TRACKS.push({type:'pending', name:item.name, lines:item.lines, dbId:item.id});
-    S.slots.push(idx);
+    
+    // پیدا کردن اولین اسلات خالی در ۸ تای اول
+    var slotIdx = -1;
+    for (var i = 0; i < 8 && i < S.slots.length; i++) {
+      if (S.slots[i] === null) { slotIdx = i; break; }
+    }
+    
+    if (slotIdx !== -1) {
+      S.slots[slotIdx] = idx;
+    } else {
+      // اگر اسلات خالی نبود، به انتها اضافه کن (نمایش داده نمیشه)
+      S.slots.push(idx);
+    }
   });
+  
   renderShelf();
 })();
 
