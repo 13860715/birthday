@@ -312,7 +312,6 @@
           <path id="labelArc" d="M -34 0 a 34 34 0 1 1 68 0 a 34 34 0 1 1 -68 0"/>
         </defs>
 
-        <!-- ═══ پایه‌های مورب هرمی (میز کوچک‌تر شده) ═══ -->
         <ellipse cx="135" cy="668" rx="16" ry="2.5" fill="rgba(0,0,0,.4)"/>
         <path d="M 163 574 L 191 574 L 153 666 L 133 666 Z" fill="url(#legWood)" stroke="#150a04" stroke-width="1.2" stroke-linejoin="round"/>
         <line x1="173" y1="578" x2="139" y2="662" stroke="rgba(0,0,0,.25)" stroke-width="1"/>
@@ -323,16 +322,13 @@
         <line x1="727" y1="578" x2="761" y2="662" stroke="rgba(0,0,0,.25)" stroke-width="1"/>
         <line x1="717" y1="578" x2="751" y2="662" stroke="rgba(255,220,160,.08)" stroke-width="1"/>
 
-        <!-- ═══ لبهٔ جلوی میز (۱۰٪ کوتاه‌تر) ═══ -->
         <rect x="45" y="574" width="810" height="22" fill="url(#woodTable)"/>
         <line x1="45" y1="574" x2="855" y2="574" stroke="#180c05" stroke-width="3"/>
 
-        <!-- ═══ سطح میز (۱۰٪ کوتاه‌تر) ═══ -->
         <rect x="45" y="548" width="810" height="30" fill="url(#woodTableTop)"/>
         <line x1="45" y1="548" x2="855" y2="548" stroke="rgba(255,214,140,.12)" stroke-width="1"/>
         <ellipse cx="450" cy="560" rx="315" ry="15" fill="rgba(255,214,140,.07)"/>
 
-        <!-- ═══ گرامافون (بدون تغییر) ═══ -->
         <g transform="translate(0,-35)">
           <ellipse cx="450" cy="588" rx="318" ry="22" fill="url(#shadowGrad)"/>
 
@@ -546,7 +542,7 @@ function splitName(name){
 }
 
 var S = {playing:false, angle:0, speed:0, target:0, crank:0, platter:1,
-         slots:[0,2,null,null,null,null,null,null,null,null,null,null,null,null,null,null]};
+         slots:[0,2,null,null,null,null,null,null]};
 
 var scene=$('#scene'), spin=$('#spin'), crankG=$('#crankG'), gram=$('#gram'),
     notesBox=$('#notes'), platterTitle=$('#platterTitle'),
@@ -625,17 +621,12 @@ function emptySlotMarkup(x,y,i){
   '</g>';
 }
 
-function getVisibleRows(){
-  var baseRows = window.innerWidth <= 900 ? 2 : 4;
-  var lastOccupied = S.slots.reduce(function(max, slot, idx) { return slot !== null ? idx + 1 : max; }, 0);
-  var requiredRows = Math.ceil(lastOccupied / 4);
-  return Math.max(baseRows, requiredRows);
-}
-
 function renderShelf(){
-  var rows = getVisibleRows();
-  var visibleSlots = rows * 4;
+  // ═══ همیشه دقیقاً ۲ ردیف × ۴ دیسک = ۸ جای دیسک ═══
+  var rows = 2;
+  var visibleSlots = 8;
 
+  // اطمینان از وجود حداقل ۸ اسلات
   while (S.slots.length < visibleSlots) S.slots.push(null);
 
   var lastFloor = floorY(rows-1);
@@ -658,6 +649,7 @@ function renderShelf(){
   }
   s += '<rect x="12" y="'+bottomY+'" width="'+(SH.W-24)+'" height="12" fill="url(#sWoodL)" stroke="#241308" stroke-width="1.5"/>';
 
+  // فقط ۸ اسلات اول نمایش داده می‌شن
   for(var i=0; i<visibleSlots; i++){
     var t = S.slots[i];
     var p = posOf(i);
